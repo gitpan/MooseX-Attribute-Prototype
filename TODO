@@ -1,0 +1,26 @@
+  - For MooseX::Attribute::Provider     
+      Intercept has and store in prototypes. (period)
+
+  - So we have to load each of the prototypes attribute in each 
+	  of the Role metaclasses rather than installing it as an attribute.
+	  	
+  - around add_role
+
+Name this module and attribute modules.
+
+    - MooseX::Slot turn your attributes into slot using 
+    - MooseX::Attribute::Temp::File ...
+    
+    Is this a real slot? The attribute
+
+    - MooseX::Attribute::Prototype; x good name
+    - MooseX::Attribute::...;
+
+    - MooseX::Slots ...             x better for other thing
+    - MooseX::Slots::Array
+
+    - MooseX::Attribute::....
+    - MooseX::Meta::Attribute::Prototypecd 
+
+    
+
