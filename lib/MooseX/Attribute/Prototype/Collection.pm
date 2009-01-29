@@ -3,7 +3,7 @@
 #		
 package MooseX::Attribute::Prototype::Collection;
 
-	our $VERSION = '0.03';
+	our $VERSION = '0.04';
 	our $AUTHORITY = 'cpan:CTBROWN';
 
 	use Moose;
@@ -54,7 +54,7 @@ MooseX::Attribute::Prototype::Collection - Container class for MooseX::Attribute
 
 =head1 VERSION 
 
-0.02
+0.04 - Released 2009-01-26
 
 =head1 SYNOPSIS
 

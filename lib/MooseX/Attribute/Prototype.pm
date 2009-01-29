@@ -2,7 +2,7 @@ package MooseX::Attribute::Prototype;
 
 	use 5.008;
 
-	our $VERSION = '0.03';
+	our $VERSION = '0.04';
 	our $AUTHORITY = 'cpan:CTBROWN';
 	
 	use Moose;
@@ -34,7 +34,7 @@ MooseX::Attribute::Prototype - Borrow and Extend Moose Attrtibutes
 
 =head1 VERSION
 
-0.03 - Released 2009-01-25
+0.03 - Released 2009-01-26
 
 =head1 SYNOPSIS
 

@@ -1,5 +1,8 @@
 Revision history for MooseX-Attribute-Prototype
 
+0.04    2009-01-28
+        - Fixed typos in documentation
+
 0.03    2009-01-25
         - Major refactor, released as MooseX::Attribute::Prototype
 

@@ -1,7 +1,7 @@
 package MooseX::Attribute::Prototype::Object;
 
 	use Moose;
-	our $VERSION = '0.03';
+	our $VERSION = '0.04';
 	our $AUTHORITY = 'cpan:CTBROWN';
 
 
@@ -84,7 +84,7 @@ MooseX::Attribute::Prototype::Object - Attribute Prototype Class
 
 =head1 VERSION
 
-0.02
+0.04 - released 2009-01-26
 
 =head1 SYNOPSIS
 	

@@ -1,6 +1,6 @@
 package MooseX::Attribute::Prototype::Meta;
 
-	our $VERSION = '0.03';
+	our $VERSION = '0.04';
 	our $AUTHORITY = 'cpan:CTBROWN';
 
 	use Moose::Role;
@@ -145,11 +145,11 @@ package MooseX::Attribute::Prototype::Meta;
 
 =head1 NAME 
 
-MooseX::Meta::Prototype::Meta - Metaclass Role for Attribute Prototypes
+MooseX::Attribute::Prototype::Meta - Metaclass Role for Attribute Prototypes
 
 =head1 VERSION 
 
-0.03 - Released 2009-01-25
+0.04 - Released 2009-01-26
 
 =head1 SYNOPSIS
 
