@@ -1,81 +1,114 @@
 package MooseX::Attribute::Prototype::Object;
 
-	use Moose;
-	our $VERSION = '0.04';
-	our $AUTHORITY = 'cpan:CTBROWN';
+    use Moose;
+    our $VERSION = '0.05';
+    our $AUTHORITY = 'cpan:CTBROWN';
 
 
+    has 'name' => ( 
+        is            => 'rw' , 
+        isa           => 'Str' ,
+        required      => 1 ,
+        documentaion  => 'Name for atttribute prototype: [$role/$attribute]' ,
+        trigger       => 
+            sub {
+                my ( $self, $val, $meta ) = @_;
 
-	has 'name' => ( 
-		is			  => 'rw' , 
-		isa			  => 'Str' ,
-		required	  => 1 ,
-		documentaion  => 'Name for atttribute prototype: [$role/$attribute]' ,
-		trigger		  => 
-			sub {
-				my ( $self, $val, $meta ) = @_;
+           
+                if ( $val =~ /\// ) {       # prototype => MyRole/my_attr: 
+                    $val =~ m/(.*)\/(.*)/;
 
-				$val =~ m/(.*)\/(.*)/;
+                    $self->role( $1 ) ;
+                    $self->attribute( $2 );
 
-				$self->role( $1 ) ;
-				$self->attribute( $2 );
-			}	
-	);
+                } else { # prototype => MyRole equivalent to MyRole/myrole 
+                                        
+                    $self->role($val);
+                    $val =~ s/.*:://;
+                    $self->attribute( lc($val) );
 
+                }
 
-	has 'role' => (
-		is		 	  => 'rw' ,
-		isa 	 	  => 'Str' ,
-		required 	  => 0 ,
-		lazy_build	  => 1 ,
-		documentation => "Role name of the Prototype role" ,
-	);
-
-	  sub _build_role {
-
-		$_[0]->name =~ m/(.*)\/(.*)/;
-		return $1;
-
-	  }
-		
-
-	has 'attribute' => ( 
-		is 			  => 'rw' ,
-		isa			  => 'Str' ,
-		required	  => 0 ,
-		lazy_build	  => 1 ,
-		documentaion  => "Attribute name from prototype role." ,
-	);
-
-	  sub _build_attribute {
-
-		  $_[0]->name =~ m/(.*)\/(.*)/;
-		  return $1;
-
-	  }
+            }   
+    );
 
 
-	has 'options' 	=> (
-		is			  => 'rw' ,
-		isa 		  => 'HashRef' ,
-		required	  => 1 ,
-		default 	  => sub { {} } ,
-		documentation => "The options specifications for the attribute" ,
-	);
+    has 'role' => (
+        is            => 'rw' ,
+        isa           => 'Str' ,
+        required      => 0 ,
+        lazy_build    => 1 ,
+        documentation => "Role name of the Prototype role" ,
+    );
 
-	has 'referenced' => (
-		is			  => 'rw' ,
-		isa 		  => 'Bool' ,
-		required	  => 1 ,
-		default		  => 0 ,
-		documentation => "Indicates if the attibute has been referenced as a prototype" , 
-	);
+      sub _build_role {
+        
+        my $name = $_[0]->name;
+        my $role;
 
-	sub get_prototype_options {
-		$_[0]->options;	
-	} 
+        $name =~ m/(^.*)::(.*$)/; 
+    
+        if ( $name =~ /\// ) {
+            $name =~ m/(.*)\/(.*)/;
+            $role = $1;
+        } else {
+            $name =~ s/.*:://; 
+            $role = $name; 
+        }
+
+        return $role;
+
+      }
+        
+
+    has 'attribute' => ( 
+        is            => 'rw' ,
+        isa           => 'Str' ,
+        required      => 0 ,
+        lazy_build    => 1 ,
+        documentaion  => "Attribute name from prototype role." ,
+    );
+
+      sub _build_attribute {
+
+          my $name = $_[0]->name;
+          my $attribute;
+          
+          if ( $_->name =~ /\// ) {
+             $_[0]->name =~ m/(.*)\/(.*)/;
+             $attribute = $2;   
+          } else {
+             $name =~ s/.*:://;
+             $attribute = $name;
+          }
+             
+          return $attribute;
+
+      }
 
 
+    has 'options'   => (
+        is            => 'rw' ,
+        isa           => 'HashRef' ,
+        required      => 1 ,
+        default       => sub { {} } ,
+        documentation => "The options specifications for the attribute" ,
+    );
+
+    has 'referenced' => (
+        is            => 'rw' ,
+        isa           => 'Bool' ,
+        required      => 1 ,
+        default       => 0 ,
+        documentation => "Indicates if the attibute has been referenced as a prototype" , 
+    );
+
+    sub get_prototype_options {
+        return $_[0]->options; 
+    } 
+
+    no Moose;
+    
 =pod
 
 =head1 NAME 
@@ -84,32 +117,40 @@ MooseX::Attribute::Prototype::Object - Attribute Prototype Class
 
 =head1 VERSION
 
-0.04 - released 2009-01-26
+0.05 - released 2009-02-05
 
 =head1 SYNOPSIS
-	
-	use MooseX::Attribute::Prototype::Object;
+    
+    use MooseX::Attribute::Prototype::Object;
 
-	my $proto = MooseX::Attribute::Prototype::Object->new(
-		name => 'foo/bar' ,
-	);
+    my $proto = MooseX::Attribute::Prototype::Object->new(
+        name => 'MooseX::Foo/bar' ,  # The 'bar' attribute from MooseX::Foo.pm
+    );
+    
+    # -OR-
+    
+    my $proto = MooseX::Attribute::Prototype::Object->new( 
+        name => 'MooseX::Foo' ,      # The 'foo' attribute the MooseX::Foo.pm
+    };
+
 
 =head1 DESCRIPTION
 
 This module is use internally by L<MooseX::Attribute::Prototype> 
-to manage the specifications for borrowed attributes.
+to manage the specifications for prototype attributes.
 
 This module provides an attribute prototype class,
 L<MooseX::Attribute::Prototype::Object> that holds all of the user 
 specification for an attribute without actually installing the 
-attribute.  The prototype can later be accessed and used as defaults
-for other attributes;  
+attribute.  Later, the prototype can provide defaults for other attributes.  
 
 =head1 Attributes
 
 =head2 name (required)
 
-The name for the attribute prototype in the form of C<role_name/attribute_name>.
+The name for the attribute prototype in the form of C<Role/attribute> or
+simply C<role>.  In the later case, attribute used a prototype the name of the
+module file in lower case without the C<.pm> suffix. 
 
 =head2 role
 
@@ -124,7 +165,7 @@ The name of the attribute for the prototype. This is automatically set.
 The specifications for the attribute. This is automatically set.
 
 =head2 referenced
-	
+    
 =head1 SEE ALSO
 
 L<MooseX::Attribute::Prototype>, 
@@ -192,13 +233,13 @@ Stevan Little
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2008 Christopher Brown and Open Data Group L<http://opendatagroup.com>, 
+Copyright 2009 Christopher Brown and Open Data Group L<http://opendatagroup.com>, 
 all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
 
-=cut	
+=cut    
 
 1; # End of module MooseX::Attribute::Prototype::Object

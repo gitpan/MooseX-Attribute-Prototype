@@ -1,5 +1,20 @@
 Revision history for MooseX-Attribute-Prototype
 
+0.05    2009-02-04
+        - Prototype.pm
+          - Fixed Version Number in Documentation
+          - Rewrote some of Prototype.pm Documentation
+        - tests 
+          - Added 01-Simple-Prototype.t test
+          - Added 04-Prototype-Meta.t test
+		- Object.pm
+          - When no attribute name is specified in the prototype, use the 
+            attribute with the same name as the role, but use all lowercase
+		  - _parse_role_from_prototype and _parse_attribute_from_prototype both
+            replaced by _parse_prototype_name function
+        - Meta.pm
+          - Option specification account for abbreviated usage
+
 0.04    2009-01-28
         - Fixed typos in documentation
 

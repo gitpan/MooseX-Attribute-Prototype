@@ -1,143 +1,157 @@
 package MooseX::Attribute::Prototype::Meta;
 
-	our $VERSION = '0.04';
-	our $AUTHORITY = 'cpan:CTBROWN';
+    use Moose::Role;
+    use MooseX::Attribute::Prototype::Object;
+    use MooseX::Attribute::Prototype::Collection;
+    use MooseX::AttributeHelpers;
 
-	use Moose::Role;
-	use MooseX::Attribute::Prototype::Object;
-	use MooseX::Attribute::Prototype::Collection;
-	use MooseX::AttributeHelpers;
-
+    our $VERSION = '0.05';
+    our $AUTHORITY = 'cpan:CTBROWN';
 
   # This keeps the queue of the roles to keep track which roles the prototype
   # attribtutes come from.   
-	has prototype_queue => (
-		metaclass	=> 'Collection::Array' ,
-		is			=> 'rw' ,
-		isa			=> 'ArrayRef[Str]' ,
-		default		=> sub { [] } ,
-		required	=> 1 ,
-		provides	=> {
-			'unshift' => 'queue_role' ,
-			'shift'   => 'dequeue_role' ,
-			'get'	  => 'get_role' ,
-			'count'	  => 'queue_size' ,
-		} ,
-	);
+    has prototype_queue => (
+        metaclass   => 'Collection::Array' ,
+        is          => 'rw' ,
+        isa         => 'ArrayRef[Str]' ,
+        default     => sub { [] } ,
+        required    => 1 ,
+        provides    => {
+            'unshift' => 'queue_role' ,
+            'shift'   => 'dequeue_role' ,
+            'get'     => 'get_role' ,
+            'count'   => 'queue_size' ,
+        } ,
+    );
 
-	
-	has 'prototypes' => (
+    
+    has 'prototypes' => (
                 is              => 'rw' ,
                 isa             => 'MooseX::Attribute::Prototype::Collection' ,
                 default         => sub { MooseX::Attribute::Prototype::Collection->new() } ,
                 required        => 1 ,
-				documentation   => 'Slot for holding the prototypes definitions' ,
+                documentation   => 'Slot for holding the prototypes definitions' ,
                 handles => [ 
-					'add_prototype' , 
-					'get_prototype' , 
-					'count_prototypes' , 
-					'get_prototype_keys' ,
-				] ,
+                    'add_prototype' , 
+                    'get_prototype' , 
+                    'count_prototypes' , 
+                    'get_prototype_keys' ,
+                ] ,
     );
 
 
-	around 'add_attribute' => sub {
-		
-		my ( $add_attribute, $self, $name, @options ) = @_;
+    around 'add_attribute' => sub {
+        
+        my ( $add_attribute, $self, $name, @options ) = @_;
 
-		my %opts;
-		if ( scalar @options % 2 == 0 ) {
-			%opts = @options;
-		} else { #if ( scalar @options == 1 ) {
-			%opts = %{ $options[0] };
-		}
+        my %opts;
+        if ( scalar @options % 2 == 0 ) {
+            %opts = @options;
+        } else { #if ( scalar @options == 1 ) {
+            %opts = %{ $options[0] };
+        }
 
 
-      # CASE: prototype used in attribute specification.  	 
-	  #   If specified with 'prototype' we need to first load that roll 
-      #   into the prototypes slot. Borrow those attributes and 
-	  
+
+      # CASE: prototype used in attribute specification.     
+      #   If specified with 'prototype' we need to first load that roll 
+      #   into the prototypes slot. Borrow those attributes and       
         if ( $opts{ prototype } ) {
 
-			# $self->flag( $self->flag + 1 ); # Indicates that all attributes until 
-			#			      # the flag are unset should be diverted into
-			#					# the prototype slot
-			
-			my $role_name = _role_from_prototype( $opts{ prototype } );
-	  
-		    $self->queue_role( $role_name );  # Keeps track of the 
+          # Check to see if this is the abbreviated prototype specification
+            if ( $opts{ prototype } !~ m/\// ) {
+                $opts{ prototype } = $opts{ prototype } . '/' . lc( $opts{ prototype } );
+            }
 
 
-		  # Dynamic loading of classes.
-			Class::MOP::load_class( $role_name );			
-			my $role = Moose::Meta::Role->initialize( $role_name );
-			$role->apply( $self );
+            # $self->flag( $self->flag + 1 ); # Indicates that all attributes until 
+            #                 # the flag are unset should be diverted into
+            #                   # the prototype slot
+            
+            my $role_name = _parse_prototype_name( $opts{ prototype } )->{role};
+
+            $self->queue_role( $role_name );  # Keeps track of the rolls
 
 
-		  # Now, let's construct the new opt string from the prototype.
-			my $proto = $self->prototypes->get( $opts{ prototype } ) 
-				|| confess( $opts{ prototype } . " does not exist" );
+          # Dynamic loading of classes.
+            Class::MOP::load_class( $role_name );           
+            my $role = Moose::Meta::Role->initialize( $role_name );
+            $role->apply( $self );
 
-		  # Clobber the prototype options with those specified in the 
-		  # class  		
-			my %new_opts = ( %{ $proto->options }, %opts );
+
+          # Now, let's construct the new opt string from the prototype.
+
+            my $proto = $self->prototypes->get( $opts{ prototype } ) 
+                || confess( $opts{ prototype } . " does not exist" );
+
+          # Clobber the prototype options with those specified in the 
+          # class       
+            my %new_opts = ( %{ $proto->options }, %opts );
  
-		  # Now. let's install the attribute, finally!
-			$self->$add_attribute( $name, %new_opts );	
+          # Now. let's install the attribute, finally!
+            $self->$add_attribute( $name, %new_opts );  
 
-		  # Mark the prototype as referenced
-			$self->prototypes->set_referenced( $opts{ prototype } );
-
-
-		  # We are done borrowing
-			$self->dequeue_role;  # We are done with the prototype roll now. 
-			# $self->flag( $self->flag - 1 );     # Set the flag.
+          # Mark the prototype as referenced
+            $self->prototypes->set_referenced( $opts{ prototype } );
 
 
- 		} elsif ( $self->queue_size > 0 ) { 
-		
-		  # We were not using a prototype, but the flag is set 
+          # We are done borrowing
+            $self->dequeue_role;  # We are done with the prototype roll now. 
+            # $self->flag( $self->flag - 1 );     # Set the flag.
+
+
+        } elsif ( $self->queue_size > 0 ) { 
+        
+          # We were not using a prototype, but the flag is set 
           # -  divert the install to the prototypes.
-			
-			$self->get_role(0); # role_name.  We do not remove this from the queue since
-								# each role can provide multiple attributes.
+            
+            $self->get_role(0); # role_name.  We do not remove this from the queue since
+                                # each role can provide multiple attributes.
 
-			$self->prototypes->add_prototype( 
-				MooseX::Attribute::Prototype::Object->new( 
-					name => $self->get_role(0) . "/" . $name ,
-					options => \%opts 
-				)
-			);
+            $self->prototypes->add_prototype( 
+                MooseX::Attribute::Prototype::Object->new( 
+                    name => $self->get_role(0) . "/" . $name ,
+                    options => \%opts 
+                )
+            );
  
-		} else {
+        } else {
 
-		  # PLAIN OLD ATTRIBUTE
-		  $self->$add_attribute( $name, @options );
+          # PLAIN OLD ATTRIBUTE
+          $self->$add_attribute( $name, @options );
 
-		} 
+        } 
 
-	}; 
+    }; 
 
 
 
 # These should be exported from MooseX::Attribute::Prototype::Object
-	sub _role_from_prototype {
+    sub _parse_prototype_name {
 
-		$_[0] =~ m/(.*)\/(.*)/;
-		return $1;
+        my $name = shift || confess( "Must pass a prototype name to _parse_prototype_name" );
+        my ( $role, $attribute );
 
-	}
+        if ( $name =~ m/\// ) {
+            $name =~ m/^(.*)\/(.*)$/;
+            $role      = $1;
+            $attribute = $2;
+        } elsif ( $name =~ /::/ ) {
+            $name  =~ m/^(.*)::(.*)$/;
+            $role = $name;
+            $attribute = lc $2;
+        } else {
+            $role = $name;
+            $attribute = lc $name;
+        }
 
 
-	sub _attribute_from_prototype {
+        return { role => $role , attribute => $attribute } ;
 
-		$_[0] =~ m/(.*)\/(.*)/;
-		return $2;
+    }
+        
 
-	}
-
-
-	no Moose::Role;
+    no Moose::Role;
 
 
 
@@ -149,7 +163,7 @@ MooseX::Attribute::Prototype::Meta - Metaclass Role for Attribute Prototypes
 
 =head1 VERSION 
 
-0.04 - Released 2009-01-26
+0.05 - Released 2009-02-06
 
 =head1 SYNOPSIS
 
@@ -159,6 +173,20 @@ Please see L<MooseX::Attribute::Prototype>.
 
 This metaclass role, when injected into an objects metaclass provides
 the ability to borrow and extend Moose attributes.
+
+=head1 INTERNAL METHODS
+
+=head2 _parse_prototype_name
+
+Given the name of the prototype in either standard or abbreviated form, 
+returns a hashref with C<role> and C<attribute> key-value pairs.
+
+  # { role => 'M::X::Foo', attribute => 'bar' }
+  _parse_prototype_name( 'M::X::Foo/bar' );  
+
+  # { role => 'M::X::Foo', attribute => 'foo' }
+  _parse_prototype_name( 'M::X::Foo' );  
+
 
 =head1 SEE ALSO
 
@@ -227,7 +255,7 @@ Stevan Little
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2008 Christopher Brown and Open Data Group L<http://opendatagroup.com>, 
+Copyright 2009 Christopher Brown and Open Data Group L<http://opendatagroup.com>, 
 all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it

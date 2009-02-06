@@ -28,7 +28,6 @@ use Test::Moose;
 
 package main;
 
-	use Data::Dumper;
     my $o = MyClass->new(  );
 
 	isa_ok( $o, 'MyClass' );
