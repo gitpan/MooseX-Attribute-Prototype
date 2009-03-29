@@ -6,7 +6,7 @@ package MooseX::Attribute::Prototype;
     use MooseX::Attribute::Prototype::Meta;
     use Moose::Util::MetaRole;
 
-    our $VERSION = '0.05';
+    our $VERSION = '0.06';
     our $AUTHORITY = 'cpan:CTBROWN';
 
     Moose::Exporter->setup_import_methods();    
@@ -33,7 +33,7 @@ MooseX::Attribute::Prototype - Borrow and Extend Moose Attrtibutes
 
 =head1 VERSION
 
-0.05 - Released 2009-02-04
+0.06 - Released 2009-03-29
 
 =head1 SYNOPSIS
 
@@ -50,14 +50,13 @@ MooseX::Attribute::Prototype - Borrow and Extend Moose Attrtibutes
     
     has 'my_attr_2' => prototype => 'MyRole2/my_attr_2'; 
     
-    
     has 'my_attr_3' => prototype => 'MyRole3'; # Same as 'MyRole3/myrole3'
 
 
 =head1 DESCRIPTION
 
 This module loads a metaclass role for attribute prototyping -- the 
-practice of borrowing an attribute from a role and (possibly) extending 
+practice of borrowing an attribute from a role and optionally extending 
 or overriding the attributes definition. This works very similar to 
 Moose's native attribute cloning, but allows for some other benefits 
 such as changing the name of the attribute and the abstracting of 
@@ -66,38 +65,37 @@ attributes into roles.
 Attributes are very often objects that have their own types and 
 methods associated with them. MooseX::Attribute::Prototype takes a very
 functional view of roles. Attributes are the fundamental building 
-blocks of class an application. This module allows better a better 
-seperation of concerns by allowing better reuse and of attributes.  Simple put all
-the functionality of a attribute in a role.  
+blocks of a class. This module promotes a better seperation of concerns 
+by allowing better reuse of attributes.  
 
-When your attribute specification declars a C<prototype>, the role is 
-loaded and the matching attribute is installed but overriden by 
-current specifications.  In many situations, all you will need to do is
-declare a C<prototype> in .  But sometimes you want to tweak beahaviors and/or
-defaults.  L<MooseX::Attribute::Prototype> allows the defaults to be 
-overridden with those defined in the class. The resulting attribute 
-specification is installed in the class.
+When your attribute includes a C<prototype> specification, the 
+attribute is copied from the role and attribute.  In many situations,
+all you will want is declare a C<prototype>.  
+All current specifications override those provided by prototype.
 
 
 =head1 How to use Attribute Prototypes
 
-All variants of usage are in the SYNOPSIS above.  But in case you want a
-more thorough explanations, Prototypes are just any good ole Moose 
-attributes in any good ole L<Moose::Role>. To use them simply declare a 
-C<prototype> in your attribute definition:
+All variants of usage are in the SYNOPSIS above.  This is a more 
+thorough explanation.  
+
+Prototypes are just any good ole Moose attributes in good ole 
+L<Moose::Role>. To use them simply declare a C<prototype> in your 
+attribute definition:
 
     prototype => 'MyRole/attribute' 
 
-where C<role> is the name of the role and C<attribute> is the name of 
+where C<MyRole> is the name of the role and C<attribute> is the name of 
 the attribute.  As of version 0.05, you may use the abbreviated 
-specification and omit the name of the C<attribute>. 
+specification and omit the name of the C<attribute>.  The attribute 
+used as the prototype has the the same name as the role, except it 
+has all lower-case letters.  
 
     prototype => 'MyRole' 
 
-The attribute used as a prototype has the the same name as the role, 
-except it has all lower-case letters.  In this example, the attribute 
-prototype is C<MyRole/myrole>.  This is just a shortcut to cover the 
-very common occurrence where the attribute shares the name of the role.  
+In this example, the prototype is C<MyRole/myrole>.  
+This is just a shortcut to cover the very common occurrence where 
+the attribute shares the name of the role.  
 
 
 =head1 WHY?

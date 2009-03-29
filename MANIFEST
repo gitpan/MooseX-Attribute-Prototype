@@ -1,4 +1,15 @@
 Changes
+inc/Module/AutoInstall.pm
+inc/Module/Install.pm
+inc/Module/Install/AutoInstall.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Include.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
 lib/MooseX/Attribute/Prototype.pm
 lib/MooseX/Attribute/Prototype/Collection.pm
 lib/MooseX/Attribute/Prototype/Meta.pm
@@ -14,7 +25,8 @@ t/03-Prototype-Collection.t
 t/04-Prototype-Meta.t
 t/05-Attribute-Prototype.t
 t/lib/borrowed_role.pm
-t/lib/role.pm
 t/lib/MyRole.pm
+t/lib/role.pm
+t/pod-coverage.t.off
 t/pod.t
 TODO

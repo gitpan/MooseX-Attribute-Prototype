@@ -11,7 +11,7 @@ use Test::Moose;
 
 		has 'attr' => prototype => 'borrowed_role/borrowed_attr';
 
-		has 'attr_2' => prototype => 'MyRole';
+		has 'attr_2' => ( prototype => 'MyRole' );
 }
 
 package main;

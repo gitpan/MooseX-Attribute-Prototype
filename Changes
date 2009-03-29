@@ -1,5 +1,10 @@
 Revision history for MooseX-Attribute-Prototype
 
+0.06    2009-03-29
+        - Fixed distro to include inc/Modules
+        - Revised some docs.  I must've been asleep when I wrote them the
+          first time.  Horrible.
+
 0.05    2009-02-04
         - Prototype.pm
           - Fixed Version Number in Documentation
