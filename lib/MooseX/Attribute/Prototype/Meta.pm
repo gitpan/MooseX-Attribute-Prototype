@@ -4,13 +4,18 @@ package MooseX::Attribute::Prototype::Meta;
     use MooseX::Attribute::Prototype::Object;
     use MooseX::Attribute::Prototype::Collection;
     use MooseX::AttributeHelpers;
+    
+    use Data::Dumper;
+    
+    use MooseX::Attribute::Prototype::Meta::Attribute::Trait::Prototype;
 
-    our $VERSION = '0.05';
+    our $VERSION = '0.10';
     our $AUTHORITY = 'cpan:CTBROWN';
 
   # This keeps the queue of the roles to keep track which roles the prototype
-  # attribtutes come from.   
-    has prototype_queue => (
+  # attribtutes come from. 
+    
+    has 'prototype_queue' => (
         metaclass   => 'Collection::Array' ,
         is          => 'rw' ,
         isa         => 'ArrayRef[Str]' ,
@@ -26,18 +31,19 @@ package MooseX::Attribute::Prototype::Meta;
 
     
     has 'prototypes' => (
-                is              => 'rw' ,
-                isa             => 'MooseX::Attribute::Prototype::Collection' ,
-                default         => sub { MooseX::Attribute::Prototype::Collection->new() } ,
-                required        => 1 ,
-                documentation   => 'Slot for holding the prototypes definitions' ,
-                handles => [ 
-                    'add_prototype' , 
-                    'get_prototype' , 
-                    'count_prototypes' , 
-                    'get_prototype_keys' ,
-                ] ,
+        is              => 'rw' ,
+        isa             => 'MooseX::Attribute::Prototype::Collection' ,
+        default         => sub { MooseX::Attribute::Prototype::Collection->new() } ,
+        required        => 1 ,
+        documentation   => 'Slot for holding the prototypes definitions' ,
+        handles => [ 
+            'add_prototype' , 
+            'get_prototype' , 
+            'count_prototypes' , 
+            'get_prototype_keys' ,
+        ] ,
     );
+
 
 
     around 'add_attribute' => sub {
@@ -51,19 +57,36 @@ package MooseX::Attribute::Prototype::Meta;
             %opts = %{ $options[0] };
         }
 
-
-
       # CASE: prototype used in attribute specification.     
       #   If specified with 'prototype' we need to first load that roll 
-      #   into the prototypes slot. Borrow those attributes and       
+      #   into the prototypes slot. Borrow those attributes and  
+      #   
+      # As of Moose ~0.85, an an option as part of an attribute will 
+      #   cause a warning to be issued.  This is the case for 
+      #   Here we dynamically add a meta-attribute trait.  
+      #     
         if ( $opts{ prototype } ) {
 
+          # Install the metaclass
           # Check to see if this is the abbreviated prototype specification
             if ( $opts{ prototype } !~ m/\// ) {
+                
+              # CTB: 2009-07-18
+                
+                # if ( $opts{ 'traits' } ) { 
+                #  push @{ $opts{'traits'} }, 'Prototype';    
+                # } else {
+                #  $opts{ 'traits' } = 'Prototype';
+                # }    
+                # print Dumper \%opts;
+                # print "\n";
                 $opts{ prototype } = $opts{ prototype } . '/' . lc( $opts{ prototype } );
+
             }
 
+            $opts{ 'traits' } = $opts{'traits'} ? [ 'Prototype', @{ $opts{'traits'} } ] : ['Prototype'] ;
 
+            
             # $self->flag( $self->flag + 1 ); # Indicates that all attributes until 
             #                 # the flag are unset should be diverted into
             #                   # the prototype slot
@@ -76,8 +99,7 @@ package MooseX::Attribute::Prototype::Meta;
           # Dynamic loading of classes.
             Class::MOP::load_class( $role_name );           
             my $role = Moose::Meta::Role->initialize( $role_name );
-            $role->apply( $self );
-
+            $role->apply( $self ); 
 
           # Now, let's construct the new opt string from the prototype.
 
@@ -89,6 +111,7 @@ package MooseX::Attribute::Prototype::Meta;
             my %new_opts = ( %{ $proto->options }, %opts );
  
           # Now. let's install the attribute, finally!
+          # Would it be possible to create this r
             $self->$add_attribute( $name, %new_opts );  
 
           # Mark the prototype as referenced
@@ -163,7 +186,7 @@ MooseX::Attribute::Prototype::Meta - Metaclass Role for Attribute Prototypes
 
 =head1 VERSION 
 
-0.05 - Released 2009-02-06
+0.10 - Released 2009-07-18
 
 =head1 SYNOPSIS
 

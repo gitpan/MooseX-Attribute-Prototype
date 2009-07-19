@@ -5,8 +5,9 @@ package MooseX::Attribute::Prototype;
     use Moose::Exporter;
     use MooseX::Attribute::Prototype::Meta;
     use Moose::Util::MetaRole;
+    use MooseX::Attribute::Prototype::Meta::Attribute::Trait::Prototype;    
 
-    our $VERSION = '0.06';
+    our $VERSION = '0.10';
     our $AUTHORITY = 'cpan:CTBROWN';
 
     Moose::Exporter->setup_import_methods();    
@@ -33,7 +34,7 @@ MooseX::Attribute::Prototype - Borrow and Extend Moose Attrtibutes
 
 =head1 VERSION
 
-0.06 - Released 2009-03-29
+0.10 - Released 2009-07-18
 
 =head1 SYNOPSIS
 
@@ -55,18 +56,16 @@ MooseX::Attribute::Prototype - Borrow and Extend Moose Attrtibutes
 
 =head1 DESCRIPTION
 
-This module loads a metaclass role for attribute prototyping -- the 
-practice of borrowing an attribute from a role and optionally extending 
-or overriding the attributes definition. This works very similar to 
-Moose's native attribute cloning, but allows for some other benefits 
-such as changing the name of the attribute and the abstracting of 
-attributes into roles.
+This module implements attribute prototyping -- the practice of borrowing 
+an attribute from a role and optionally overriding/extending the attribute 
+definition. This is This works very similar to Moose's native attribute 
+cloning, but allows for additional benefits such as changing the name of 
+the attribute and the abstracting of attributes into roles.
 
-Attributes are very often objects that have their own types and 
+Attributes are very often designed as objects that have their own types and 
 methods associated with them. MooseX::Attribute::Prototype takes a very
-functional view of roles. Attributes are the fundamental building 
-blocks of a class. This module promotes a better seperation of concerns 
-by allowing better reuse of attributes.  
+pragmatic view of attributes. They are the fundamental building 
+blocks of a class. This module promotes a more natural reuse of attributes.  
 
 When your attribute includes a C<prototype> specification, the 
 attribute is copied from the role and attribute.  In many situations,
@@ -93,8 +92,8 @@ has all lower-case letters.
 
     prototype => 'MyRole' 
 
-In this example, the prototype is C<MyRole/myrole>.  
-This is just a shortcut to cover the very common occurrence where 
+In this example, the prototype is C<MyRole/myrole> serves as the 
+prototype.  This is just a shortcut to cover the very common occurrence where 
 the attribute shares the name of the role.  
 
 

@@ -14,6 +14,7 @@ lib/MooseX/Attribute/Prototype.pm
 lib/MooseX/Attribute/Prototype/Collection.pm
 lib/MooseX/Attribute/Prototype/Meta.pm
 lib/MooseX/Attribute/Prototype/Object.pm
+lib/MooseX/Attribute/Prototype/Meta/Attribute/Trait/Prototype.pm
 Makefile.PL
 MANIFEST
 META.yml

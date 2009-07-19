@@ -2,16 +2,17 @@ use Test::More tests => 7;
 use Test::Moose;  
 
 	use lib 't/lib';
+	use lib 'lib';
 
 { 
 
-	package MyClass;
-		use Moose;
-		use MooseX::Attribute::Prototype;
-
-		has 'attr' => prototype => 'borrowed_role/borrowed_attr';
-
-		has 'attr_2' => ( prototype => 'MyRole' );
+    package MyClass;
+	use Moose;
+	use MooseX::Attribute::Prototype;
+    
+	has 'attr' => ( prototype => 'borrowed_role/borrowed_attr' );
+	has 'attr_2' => ( prototype => 'MyRole' );
+	
 }
 
 package main;

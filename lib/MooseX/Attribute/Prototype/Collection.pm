@@ -6,7 +6,7 @@ package MooseX::Attribute::Prototype::Collection;
     use Moose;
     use MooseX::AttributeHelpers;
 
-    our $VERSION = '0.05';
+    our $VERSION = '0.10';
     our $AUTHORITY = 'cpan:CTBROWN';
 
     has 'prototypes' => (
@@ -23,7 +23,8 @@ package MooseX::Attribute::Prototype::Collection;
             keys    => 'keys' ,
         } ,
     );
-            
+
+         
 
   # This is a simplified interface for set where you pass a prototype instead
   # of a name => prototype.
@@ -54,7 +55,7 @@ MooseX::Attribute::Prototype::Collection - Container class for MooseX::Attribute
 
 =head1 VERSION 
 
-0.05 - Released 2009-02-04
+0.10 - Released 2009-07-18
 
 =head1 SYNOPSIS
 

@@ -2,8 +2,7 @@ package main;
 
 	
 	use Test::More tests => 9;
-
-	use_ok 'MooseX::Attribute::Prototype::Object';
+	use_ok 'MooseX::Attribute::Prototype::Object';	
 	
 	my $o = MooseX::Attribute::Prototype::Object->new( 
 		name => 'foo/bar' ,

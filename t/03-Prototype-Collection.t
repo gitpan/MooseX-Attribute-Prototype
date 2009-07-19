@@ -1,11 +1,10 @@
 package main;
-
 	
 	use Test::More tests => 13;
 
 	use_ok 'MooseX::Attribute::Prototype::Object';
 	use_ok 'MooseX::Attribute::Prototype::Collection';	
-
+	
 	my $o = MooseX::Attribute::Prototype::Object->new( 
 		name => 'foo/bar' ,
 	); 

@@ -1,20 +1,18 @@
 package MooseX::Attribute::Prototype::Object;
 
     use Moose;
-    our $VERSION = '0.05';
+    our $VERSION = '0.10';
     our $AUTHORITY = 'cpan:CTBROWN';
 
-
     has 'name' => ( 
-        is            => 'rw' , 
+        is            => 'rw' , #rw
         isa           => 'Str' ,
         required      => 1 ,
-        documentaion  => 'Name for atttribute prototype: [$role/$attribute]' ,
+        documentation  => 'Name for atttribute prototype: [$role/$attribute]' ,
         trigger       => 
             sub {
                 my ( $self, $val, $meta ) = @_;
 
-           
                 if ( $val =~ /\// ) {       # prototype => MyRole/my_attr: 
                     $val =~ m/(.*)\/(.*)/;
 
@@ -31,6 +29,7 @@ package MooseX::Attribute::Prototype::Object;
 
             }   
     );
+
 
 
     has 'role' => (
@@ -66,7 +65,7 @@ package MooseX::Attribute::Prototype::Object;
         isa           => 'Str' ,
         required      => 0 ,
         lazy_build    => 1 ,
-        documentaion  => "Attribute name from prototype role." ,
+        documentation  => "Attribute name from prototype role." ,
     );
 
       sub _build_attribute {
@@ -117,7 +116,7 @@ MooseX::Attribute::Prototype::Object - Attribute Prototype Class
 
 =head1 VERSION
 
-0.05 - released 2009-02-05
+0.10 - released 2009-07-18
 
 =head1 SYNOPSIS
     
@@ -136,7 +135,7 @@ MooseX::Attribute::Prototype::Object - Attribute Prototype Class
 
 =head1 DESCRIPTION
 
-This module is use internally by L<MooseX::Attribute::Prototype> 
+This class is use internally by L<MooseX::Attribute::Prototype> 
 to manage the specifications for prototype attributes.
 
 This module provides an attribute prototype class,
